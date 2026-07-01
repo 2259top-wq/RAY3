@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>星啟心靈 • 生命靈數生命密碼解密 (CC0 無版權開放版)</title>
+  <meta name="description" content="輸入出生年月日，完全自動化計算您的生命靈數（Life Path Number）、大師卓越數（11, 22, 33）、繪製生命靈數九宮格能量連線並提供年度流年運勢。遵循 CC0 協議開放源碼與內容，可任意複製與商業應用。">
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+
+  <!-- 動態星空畫布 -->
+  <canvas id="starfield"></canvas>
+
+  <!-- 模擬計算中的動畫遮罩 -->
+  <div id="anim-overlay" class="animation-overlay hidden">
+    <div class="cosmic-loader"></div>
+    <p id="anim-text">正在與宇宙星體建立連線...</p>
+  </div>
+
+  <!-- 主要應用程式容器 -->
+  <div class="app-container">
+    
+    <!-- 網站標頭 -->
+    <header class="site-header">
+      <div class="celestial-icon">
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+          <circle cx="32" cy="32" r="28" stroke="#dfb76c" stroke-width="1.5" stroke-dasharray="4 4" />
+          <polygon points="32,6 36,26 56,26 40,36 46,56 32,44 18,56 24,36 8,26 28,26" fill="#ffd700" filter="drop-shadow(0 0 8px rgba(255, 215, 0, 0.7))" />
+        </svg>
+      </div>
+      <h1>星啟心靈 • 生命靈數</h1>
+      <p>解鎖生日中潛藏的靈性藍圖與命運密碼</p>
+    </header>
+
+    <!-- 輸入表單與主面板 -->
+    <main class="glass-panel">
+      <div class="grid-2col">
+        
+        <!-- 左側：旋轉黃道十二宮圖騰 -->
+        <div class="zodiac-wheel-wrapper">
+          <div class="zodiac-wheel">
+            <!-- 繪製一個抽象的占星裝飾 -->
+            <svg width="240" height="240" viewBox="0 0 240 240" style="opacity: 0.35;">
+              <circle cx="120" cy="120" r="115" stroke="#dfb76c" stroke-width="1" fill="none"/>
+              <circle cx="120" cy="120" r="95" stroke="#dfb76c" stroke-width="1" stroke-dasharray="6 3" fill="none"/>
+              <line x1="120" y1="5" x2="120" y2="235" stroke="#dfb76c" stroke-width="0.5"/>
+              <line x1="5" y1="120" x2="235" y2="120" stroke="#dfb76c" stroke-width="0.5"/>
+              <line x1="39" y1="39" x2="201" y2="201" stroke="#dfb76c" stroke-width="0.5"/>
+              <line x1="201" y1="39" x2="39" y2="201" stroke="#dfb76c" stroke-width="0.5"/>
+            </svg>
+          </div>
+          <div class="zodiac-decor-center">✵</div>
+        </div>
+
+        <!-- 右側：輸入出生年月日 -->
+        <div>
+          <h2 class="form-title">讀取生命密碼</h2>
+          <div class="input-group">
+            <label for="birth-date">請選擇您的出生日期 (西元)</label>
+            <input type="date" id="birth-date" min="1900-01-01">
+          </div>
+          <button id="btn-calculate" class="btn-primary">開始解析命盤</button>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- 初始說明畫面 -->
+    <section id="initial-view" class="glass-panel text-center">
+      <p style="color: var(--color-light-purple); font-size: 1rem; line-height: 1.8;">
+        生命靈數（Life Path Number）是由古希臘數學家畢達哥拉斯所創立的數字哲學。<br>
+        透過對您出生年月日數字的頻率加總，能探索您本世的靈魂本質、天賦能力、性格陰影，以及當前流年運勢。<br>
+        <strong>請在上方選擇生日，開啟您的專屬靈數報告。</strong>
+      </p>
+    </section>
+
+    <!-- 計算結果看板 (初始隱藏) -->
+    <section id="dashboard" class="glass-panel hidden animate-fade-in">
+      
+      <!-- 頂部基本資訊 -->
+      <div class="res-header-layout">
+        <div id="res-number" class="number-glow-circle"></div>
+        <div class="res-basic-info">
+          <p class="res-meta">BIRTH CHART REPORT</p>
+          <h2 id="res-archetype">領袖</h2>
+          <h3 id="res-title">開創數 1</h3>
+          <p id="res-process" class="res-meta">計算過程：1 + 9 + 9 + 0 + 1 + 2 + 1 + 5 = 28 -> 10 -> 1</p>
+          <p id="res-summary">生命靈數 1 的人是天生的領袖，具備強大的開創力與獨立自主能力。</p>
+        </div>
+      </div>
+
+      <!-- 大師卓越數區 (當有11, 22, 33時動態插入) -->
+      <div id="res-master-container" class="hidden"></div>
+
+      <!-- 中間：九宮格與能量連線展示 -->
+      <div class="grid-section-layout">
+        
+        <!-- 左側：3x3 實體九宮格 (帶 SVG 連線) -->
+        <div class="grid-outer-container">
+          <div class="magic-nine-grid">
+            <div class="grid-cell" data-num="1"><span class="num-label">1</span></div>
+            <div class="grid-cell" data-num="2"><span class="num-label">2</span></div>
+            <div class="grid-cell" data-num="3"><span class="num-label">3</span></div>
+            <div class="grid-cell" data-num="4"><span class="num-label">4</span></div>
+            <div class="grid-cell" data-num="5"><span class="num-label">5</span></div>
+            <div class="grid-cell" data-num="6"><span class="num-label">6</span></div>
+            <div class="grid-cell" data-num="7"><span class="num-label">7</span></div>
+            <div class="grid-cell" data-num="8"><span class="num-label">8</span></div>
+            <div class="grid-cell" data-num="9"><span class="num-label">9</span></div>
+          </div>
+          
+          <!-- 連線 SVG (覆蓋在九宮格之上) -->
+          <svg class="grid-svg-overlay" viewBox="0 0 270 270" width="270" height="270">
+            <!-- 橫線 -->
+            <path id="line-1-2-3" class="svg-connection-line" d="M 40,40 L 230,40" />
+            <path id="line-4-5-6" class="svg-connection-line" d="M 40,135 L 230,135" />
+            <path id="line-7-8-9" class="svg-connection-line" d="M 40,230 L 230,230" />
+            <!-- 直線 -->
+            <path id="line-1-4-7" class="svg-connection-line" d="M 40,40 L 40,230" />
+            <path id="line-2-5-8" class="svg-connection-line" d="M 135,40 L 135,230" />
+            <path id="line-3-6-9" class="svg-connection-line" d="M 230,40 L 230,230" />
+            <!-- 斜線 -->
+            <path id="line-1-5-9" class="svg-connection-line" d="M 40,40 L 230,230" />
+            <path id="line-3-5-7" class="svg-connection-line" d="M 230,40 L 40,230" />
+          </svg>
+        </div>
+
+        <!-- 右側：連線特質詳細分析 -->
+        <div id="res-connections-list" class="connections-info-area">
+          <!-- 動態填入 -->
+        </div>
+
+      </div>
+
+      <!-- 新增：單個九宮格數字圈數詳細解析面板 -->
+      <div id="cell-interpretation-area" class="cell-interpretation-box hidden animate-fade-in">
+        <h4>👉 點擊上方九宮格中 1~9 的數字，可解密該數字的「圈數能量」：</h4>
+        <div id="cell-detail-content" class="cell-detail-placeholder">
+          （點擊上方九宮格中的任意數字格，即可查看您在該數字上的能量強弱與課題分析）
+        </div>
+      </div>
+
+      <!-- 下方：詳細解密 Tab 系統 -->
+      <div class="tabs-container">
+        
+        <!-- Tab 按鈕列 -->
+        <div class="tabs-control-bar">
+          <button class="tab-btn active" data-target="tab-personality">🎭 性格解碼</button>
+          <button class="tab-btn" data-target="tab-career">💼 天賦職涯</button>
+          <button class="tab-btn" data-target="tab-love">💖 愛情人際</button>
+          <button class="tab-btn" data-target="tab-fortune">🔮 流年運勢</button>
+        </div>
+
+        <!-- Tab 內容面板 -->
+        <div class="tabs-content-area">
+          <div id="tab-personality" class="tab-pane active"></div>
+          <div id="tab-career" class="tab-pane"></div>
+          <div id="tab-love" class="tab-pane"></div>
+          <div id="tab-fortune" class="tab-pane"></div>
+        </div>
+
+      </div>
+
+      <!-- 分享與匯出按鈕 -->
+      <div class="actions-container">
+        <button id="btn-copy" class="btn-secondary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+          複製文字報告
+        </button>
+        <button id="btn-export" class="btn-secondary glow-gold">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          下載精美分析圖卡
+        </button>
+      </div>
+
+    </section>
+
+    <!-- 生命靈數科普指南 -->
+    <section class="glass-panel guide-section">
+      <h2>✦ 生命靈數科普指南</h2>
+      <div class="faq-grid">
+        
+        <div class="faq-item">
+          <h4>💡 Q1: 什麼是生命靈數？</h4>
+          <p>生命靈數是源自古希臘數學哲人畢達哥拉斯的哲學體系，認為萬物皆由數字的頻率構成。靈數能反映一個人與生俱來的性格框架、優缺點、核心課題與未來運勢方向。</p>
+        </div>
+
+        <div class="faq-item">
+          <h4>🧮 Q2: 生命靈數是如何計算的？</h4>
+          <p>將西元出生年月日的每一位數字加總，加總出的兩位數再拆開相加，直到得出個位數（1-9）。若在相加的過程中出現 11、22、33 等重複位數，則被稱為「大師數」或「卓越數」，代表具備高度的潛在能量。</p>
+        </div>
+
+        <div class="faq-item">
+          <h4>🎨 Q3: 什麼是生命靈數九宮格？</h4>
+          <p>九宮格是以 1 到 9 排列的 3x3 矩陣。我們將生日的所有單個數字，加上最後的生命靈數與生日數，放入格中統計次數（稱為圈數）。當某些數字能連成一條線（直、橫、斜）時，即代表激活了特殊的潛能天賦。</p>
+        </div>
+
+        <div class="faq-item">
+          <h4>⏳ Q4: 流年數對我今年有何影響？</h4>
+          <p>流年數決定了您當前的年度運勢主調（以 9 年為一個輪迴週期）。每個人在不同年份會走入播種（流年1）、等待（流年2）、創意（流年3）等階段，可作為年度規劃的自我參考指南。</p>
+        </div>
+
+      </div>
+
+      <!-- 免責聲明 -->
+      <div class="disclaimer-box">
+        <h5>⚖️ 娛樂與探索免責聲明</h5>
+        <p>本網站提供之生命靈數解讀、能量連線及運勢引導僅供自我探索、啟發靈感與休閒娛樂使用，不應作為醫療、法律、財務或重大人生抉擇的絕對依據。命運掌握在自己手中，願光芒與您同行。</p>
+      </div>
+    </section>
+
+    <!-- 頁尾 (包含 CC0 授權) -->
+    <footer class="site-footer">
+      <p>© 星啟心靈 • 遵循 CC0 協議開放公有領域</p>
+      <p>本網站的全部源碼、演算法、解說文案及視覺設計均宣告無版權保護，任何人皆可進行商業與非商業複製、分發或修改。</p>
+      
+      <div class="cc0-badge-area">
+        <span class="cc0-icon">0</span>
+        <span class="cc0-text">PUBLIC DOMAIN (CC0)</span>
+      </div>
+    </footer>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
