@@ -20,13 +20,12 @@
 
   <!-- 主要應用程式容器 -->
   <div class="app-container">
-    
-    <!-- 頂部導覽列 -->
     <nav class="site-nav">
       <div class="nav-brand">星啟心靈 • Celestial Soul</div>
       <div class="nav-links">
-        <a href="index.html" class="nav-link active">☯️ 生命靈數</a>
-        <a href="zodiac-matchmaker/index.html" class="nav-link">💖 星座速配</a>
+        <a href="#personal" class="nav-link active" id="nav-btn-personal">☯️ 個人生命密碼</a>
+        <a href="#numerology-match" class="nav-link" id="nav-btn-numerology-match">👥 雙人密碼速配</a>
+        <a href="#zodiac-match" class="nav-link" id="nav-btn-zodiac-match">💖 雙人星座速配</a>
       </div>
     </nav>
     
@@ -38,160 +37,582 @@
           <polygon points="32,6 36,26 56,26 40,36 46,56 32,44 18,56 24,36 8,26 28,26" fill="#ffd700" filter="drop-shadow(0 0 8px rgba(255, 215, 0, 0.7))" />
         </svg>
       </div>
-      <h1>星啟心靈 • 生命靈數</h1>
-      <p>解鎖生日中潛藏的靈性藍圖與命運密碼</p>
+      <h1 id="app-title-header">星啟心靈 • 生命密碼</h1>
+      <p id="app-desc-header">解鎖生日中潛藏的靈性藍圖與命運密碼</p>
     </header>
 
-    <!-- 輸入表單與主面板 -->
-    <main class="glass-panel">
-      <div class="grid-2col">
+    <!-- ==================== 1. 個人生命密碼標籤頁 ==================== -->
+    <div id="tab-content-personal" class="app-tab-section active">
+      <!-- 輸入表單與主面板 -->
+      <main class="glass-panel">
+        <div class="grid-2col">
+          
+          <!-- 左側：旋轉黃道十二宮圖騰 -->
+          <div class="zodiac-wheel-wrapper">
+            <div class="zodiac-wheel">
+              <!-- 繪製一個抽象的占星裝飾 -->
+              <svg width="240" height="240" viewBox="0 0 240 240" style="opacity: 0.35;">
+                <circle cx="120" cy="120" r="115" stroke="#dfb76c" stroke-width="1" fill="none"/>
+                <circle cx="120" cy="120" r="95" stroke="#dfb76c" stroke-width="1" stroke-dasharray="6 3" fill="none"/>
+                <line x1="120" y1="5" x2="120" y2="235" stroke="#dfb76c" stroke-width="0.5"/>
+                <line x1="5" y1="120" x2="235" y2="120" stroke="#dfb76c" stroke-width="0.5"/>
+                <line x1="39" y1="39" x2="201" y2="201" stroke="#dfb76c" stroke-width="0.5"/>
+                <line x1="201" y1="39" x2="39" y2="201" stroke="#dfb76c" stroke-width="0.5"/>
+              </svg>
+            </div>
+            <div class="zodiac-decor-center">✵</div>
+          </div>
+
+          <!-- 右側：輸入出生年月日 -->
+          <div>
+            <h2 class="form-title">讀取生命密碼</h2>
+            <div class="input-group">
+              <label for="birth-date">請選擇您的出生日期 (西元)</label>
+              <input type="date" id="birth-date" min="1900-01-01">
+            </div>
+            <button id="btn-calculate" class="btn-primary">開始解析命盤</button>
+          </div>
+
+        </div>
+      </main>
+
+      <!-- 初始說明畫面 -->
+      <section id="initial-view" class="glass-panel text-center">
+        <p style="color: var(--color-light-purple); font-size: 1rem; line-height: 1.8;">
+          生命靈數（Life Path Number）是由古希臘數學家畢達哥拉斯所創立的數字哲學。<br>
+          透過對您出生年月日數字的頻率加總，能探索您本世的靈魂本質、天賦能力、性格陰影，以及當前流年運勢。<br>
+          <strong>請在上方選擇生日，開啟您的專屬靈數報告。</strong>
+        </p>
+      </section>
+
+      <!-- 計算結果看板 (初始隱藏) -->
+      <section id="dashboard" class="glass-panel hidden animate-fade-in">
         
-        <!-- 左側：旋轉黃道十二宮圖騰 -->
-        <div class="zodiac-wheel-wrapper">
-          <div class="zodiac-wheel">
-            <!-- 繪製一個抽象的占星裝飾 -->
-            <svg width="240" height="240" viewBox="0 0 240 240" style="opacity: 0.35;">
-              <circle cx="120" cy="120" r="115" stroke="#dfb76c" stroke-width="1" fill="none"/>
-              <circle cx="120" cy="120" r="95" stroke="#dfb76c" stroke-width="1" stroke-dasharray="6 3" fill="none"/>
-              <line x1="120" y1="5" x2="120" y2="235" stroke="#dfb76c" stroke-width="0.5"/>
-              <line x1="5" y1="120" x2="235" y2="120" stroke="#dfb76c" stroke-width="0.5"/>
-              <line x1="39" y1="39" x2="201" y2="201" stroke="#dfb76c" stroke-width="0.5"/>
-              <line x1="201" y1="39" x2="39" y2="201" stroke="#dfb76c" stroke-width="0.5"/>
+        <!-- 頂部基本資訊 -->
+        <div class="res-header-layout">
+          <div id="res-number" class="number-glow-circle"></div>
+          <div class="res-basic-info">
+            <p class="res-meta">BIRTH CHART REPORT • <span id="res-birth-date"></span></p>
+            <h2 id="res-archetype">領袖</h2>
+            <h3 id="res-title">開創數 1</h3>
+            <p id="res-process" class="res-meta">計算過程：1 + 9 + 9 + 0 + 1 + 2 + 1 + 5 = 28 -> 10 -> 1</p>
+            <p id="res-summary">生命靈數 1 的人是天生的領袖，具備強大的開創力與獨立自主能力。</p>
+          </div>
+        </div>
+
+        <!-- 大師卓越數區 (當有11, 22, 33時動態插入) -->
+        <div id="res-master-container" class="hidden"></div>
+
+        <!-- 中間：九宮格與能量連線展示 -->
+        <div class="grid-section-layout">
+          
+          <!-- 左側：3x3 實體九宮格 (帶 SVG 連線) -->
+          <div class="grid-outer-container">
+            <div class="magic-nine-grid">
+              <div class="grid-cell" data-num="1"><span class="num-label">1</span></div>
+              <div class="grid-cell" data-num="2"><span class="num-label">2</span></div>
+              <div class="grid-cell" data-num="3"><span class="num-label">3</span></div>
+              <div class="grid-cell" data-num="4"><span class="num-label">4</span></div>
+              <div class="grid-cell" data-num="5"><span class="num-label">5</span></div>
+              <div class="grid-cell" data-num="6"><span class="num-label">6</span></div>
+              <div class="grid-cell" data-num="7"><span class="num-label">7</span></div>
+              <div class="grid-cell" data-num="8"><span class="num-label">8</span></div>
+              <div class="grid-cell" data-num="9"><span class="num-label">9</span></div>
+            </div>
+            
+            <!-- 連線 SVG (覆蓋在九宮格之上) -->
+            <svg class="grid-svg-overlay" viewBox="0 0 270 270" width="270" height="270">
+              <!-- 橫線 -->
+              <path id="line-1-2-3" class="svg-connection-line" d="M 40,40 L 230,40" />
+              <path id="line-4-5-6" class="svg-connection-line" d="M 40,135 L 230,135" />
+              <path id="line-7-8-9" class="svg-connection-line" d="M 40,230 L 230,230" />
+              <!-- 直線 -->
+              <path id="line-1-4-7" class="svg-connection-line" d="M 40,40 L 40,230" />
+              <path id="line-2-5-8" class="svg-connection-line" d="M 135,40 L 135,230" />
+              <path id="line-3-6-9" class="svg-connection-line" d="M 230,40 L 230,230" />
+              <!-- 斜線 -->
+              <path id="line-1-5-9" class="svg-connection-line" d="M 40,40 L 230,230" />
+              <path id="line-3-5-7" class="svg-connection-line" d="M 230,40 L 40,230" />
             </svg>
           </div>
-          <div class="zodiac-decor-center">✵</div>
-        </div>
 
-        <!-- 右側：輸入出生年月日 -->
-        <div>
-          <h2 class="form-title">讀取生命密碼</h2>
-          <div class="input-group">
-            <label for="birth-date">請選擇您的出生日期 (西元)</label>
-            <input type="date" id="birth-date" min="1900-01-01">
+          <!-- 右側：連線特質詳細分析 -->
+          <div id="res-connections-list" class="connections-info-area">
+            <!-- 動態填入 -->
           </div>
-          <button id="btn-calculate" class="btn-primary">開始解析命盤</button>
+
         </div>
 
-      </div>
-    </main>
-
-    <!-- 初始說明畫面 -->
-    <section id="initial-view" class="glass-panel text-center">
-      <p style="color: var(--color-light-purple); font-size: 1rem; line-height: 1.8;">
-        生命靈數（Life Path Number）是由古希臘數學家畢達哥拉斯所創立的數字哲學。<br>
-        透過對您出生年月日數字的頻率加總，能探索您本世的靈魂本質、天賦能力、性格陰影，以及當前流年運勢。<br>
-        <strong>請在上方選擇生日，開啟您的專屬靈數報告。</strong>
-      </p>
-    </section>
-
-    <!-- 計算結果看板 (初始隱藏) -->
-    <section id="dashboard" class="glass-panel hidden animate-fade-in">
-      
-      <!-- 頂部基本資訊 -->
-      <div class="res-header-layout">
-        <div id="res-number" class="number-glow-circle"></div>
-        <div class="res-basic-info">
-          <p class="res-meta">BIRTH CHART REPORT • <span id="res-birth-date"></span></p>
-          <h2 id="res-archetype">領袖</h2>
-          <h3 id="res-title">開創數 1</h3>
-          <p id="res-process" class="res-meta">計算過程：1 + 9 + 9 + 0 + 1 + 2 + 1 + 5 = 28 -> 10 -> 1</p>
-          <p id="res-summary">生命靈數 1 的人是天生的領袖，具備強大的開創力與獨立自主能力。</p>
-        </div>
-      </div>
-
-      <!-- 大師卓越數區 (當有11, 22, 33時動態插入) -->
-      <div id="res-master-container" class="hidden"></div>
-
-      <!-- 中間：九宮格與能量連線展示 -->
-      <div class="grid-section-layout">
-        
-        <!-- 左側：3x3 實體九宮格 (帶 SVG 連線) -->
-        <div class="grid-outer-container">
-          <div class="magic-nine-grid">
-            <div class="grid-cell" data-num="1"><span class="num-label">1</span></div>
-            <div class="grid-cell" data-num="2"><span class="num-label">2</span></div>
-            <div class="grid-cell" data-num="3"><span class="num-label">3</span></div>
-            <div class="grid-cell" data-num="4"><span class="num-label">4</span></div>
-            <div class="grid-cell" data-num="5"><span class="num-label">5</span></div>
-            <div class="grid-cell" data-num="6"><span class="num-label">6</span></div>
-            <div class="grid-cell" data-num="7"><span class="num-label">7</span></div>
-            <div class="grid-cell" data-num="8"><span class="num-label">8</span></div>
-            <div class="grid-cell" data-num="9"><span class="num-label">9</span></div>
+        <!-- 新增：單個九宮格數字圈數詳細解析面板 -->
+        <div id="cell-interpretation-area" class="cell-interpretation-box hidden animate-fade-in">
+          <h4>👉 點擊上方九宮格中 1~9 的數字，可解密該數字的「圈數能量」：</h4>
+          <div id="cell-detail-content" class="cell-detail-placeholder">
+            （點擊上方九宮格中的任意數字格，即可查看您在該數字上的能量強弱與課題分析）
           </div>
+        </div>
+
+        <!-- 下方：詳細解密 Tab 系統 -->
+        <div class="tabs-container">
           
-          <!-- 連線 SVG (覆蓋在九宮格之上) -->
-          <svg class="grid-svg-overlay" viewBox="0 0 270 270" width="270" height="270">
-            <!-- 橫線 -->
-            <path id="line-1-2-3" class="svg-connection-line" d="M 40,40 L 230,40" />
-            <path id="line-4-5-6" class="svg-connection-line" d="M 40,135 L 230,135" />
-            <path id="line-7-8-9" class="svg-connection-line" d="M 40,230 L 230,230" />
-            <!-- 直線 -->
-            <path id="line-1-4-7" class="svg-connection-line" d="M 40,40 L 40,230" />
-            <path id="line-2-5-8" class="svg-connection-line" d="M 135,40 L 135,230" />
-            <path id="line-3-6-9" class="svg-connection-line" d="M 230,40 L 230,230" />
-            <!-- 斜線 -->
-            <path id="line-1-5-9" class="svg-connection-line" d="M 40,40 L 230,230" />
-            <path id="line-3-5-7" class="svg-connection-line" d="M 230,40 L 40,230" />
-          </svg>
+          <!-- Tab 按鈕列 -->
+          <div class="tabs-control-bar">
+            <button class="tab-btn active" data-target="tab-personality">🎭 性格解碼</button>
+            <button class="tab-btn" data-target="tab-career">💼 天賦職涯</button>
+            <button class="tab-btn" data-target="tab-love">💖 愛情人際</button>
+            <button class="tab-btn" data-target="tab-fortune">🔮 流年運勢</button>
+          </div>
+
+          <!-- Tab 內容面板 -->
+          <div class="tabs-content-area">
+            <div id="tab-personality" class="tab-pane active"></div>
+            <div id="tab-career" class="tab-pane"></div>
+            <div id="tab-love" class="tab-pane"></div>
+            <div id="tab-fortune" class="tab-pane"></div>
+          </div>
+
         </div>
 
-        <!-- 右側：連線特質詳細分析 -->
-        <div id="res-connections-list" class="connections-info-area">
-          <!-- 動態填入 -->
+        <!-- 分享與匯出按鈕 -->
+        <div class="actions-container">
+          <button id="btn-copy" class="btn-secondary">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            複製文字報告
+          </button>
+          <button id="btn-export" class="btn-secondary glow-gold">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            下載精美分析圖卡
+          </button>
         </div>
 
-      </div>
+      </section>
 
-      <!-- 新增：單個九宮格數字圈數詳細解析面板 -->
-      <div id="cell-interpretation-area" class="cell-interpretation-box hidden animate-fade-in">
-        <h4>👉 點擊上方九宮格中 1~9 的數字，可解密該數字的「圈數能量」：</h4>
-        <div id="cell-detail-content" class="cell-detail-placeholder">
-          （點擊上方九宮格中的任意數字格，即可查看您在該數字上的能量強弱與課題分析）
+      <!-- 生命靈數科普指南 -->
+      <section class="glass-panel guide-section">
+        <h2>✦ 生命靈數科普指南</h2>
+        <div class="faq-grid">
+          
+          <div class="faq-item">
+            <h4>💡 Q1: 什麼是生命靈數？</h4>
+            <p>生命靈數是源自古希臘數學哲人畢達哥拉斯的哲學體系，認為萬物皆由數字的頻率構成。靈數能反映一個人與生俱來的性格框架、優缺點、核心課題與未來運勢方向。</p>
+            <img src="celestial_numerology.png" alt="生命靈數宇宙星體" class="faq-image">
+          </div>
+
+          <div class="faq-item">
+            <h4>🧮 Q2: 生命靈數是如何計算的？</h4>
+            <p>將西元出生年月日的每一位數字加總，加總出的兩位數再拆開相加，直到得出個位數（1-9）。若在相加的過程中出現 11、22、33 等重複位數，則被稱為「大師數」或「卓越數」，代表具備高度的潛在能量。</p>
+            <img src="glowing_numbers_math.png" alt="數字密碼計算" class="faq-image">
+          </div>
+
+          <div class="faq-item">
+            <h4>🎨 Q3: 什麼是生命靈數九宮格？</h4>
+            <p>九宮格是以 1 到 9 排列的 3x3 矩陣。我們將生日的所有單個數字，加上最後的生命靈數與生日數，放入格中統計次數（稱為圈數）。當某些數字能連成一條線（直、橫、斜）時，即代表激活了特殊的潛能天賦。</p>
+            <img src="magic_grid.png" alt="能量連線九宮格" class="faq-image">
+          </div>
+
+          <div class="faq-item">
+            <h4>⏳ Q4: 流年數對我今年有何影響？</h4>
+            <p>流年數決定了您當前的年度運勢主調（以 9 年為一個輪迴週期）。每個人在不同年份會走入播種（流年1）、等待（流年2）、創意（流年3）等階段，可作為年度規劃的自我參考指南。</p>
+            <img src="cosmic_hourglass.png" alt="時光沙漏流年運勢" class="faq-image">
+          </div>
+
         </div>
-      </div>
 
-      <!-- 下方：詳細解密 Tab 系統 -->
-      <div class="tabs-container">
-        
-        <!-- Tab 按鈕列 -->
-        <div class="tabs-control-bar">
-          <button class="tab-btn active" data-target="tab-personality">🎭 性格解碼</button>
-          <button class="tab-btn" data-target="tab-career">💼 天賦職涯</button>
-          <button class="tab-btn" data-target="tab-love">💖 愛情人際</button>
-          <button class="tab-btn" data-target="tab-fortune">🔮 流年運勢</button>
+        <!-- 免責聲明 -->
+        <div class="disclaimer-box">
+          <h5>⚖️ 娛樂與探索免責聲明</h5>
+          <p>本網站提供之生命靈數解讀、能量連線及運勢引導僅供自我探索、啟發靈感與休閒娛樂使用，不應作為醫療、法律、財務或重大人生抉擇的絕對依據。命運掌握在自己手中，願光芒與您同行。</p>
+        </div>
+      </section>
+    </div>
+
+    <!-- ==================== 2. 雙人密碼速配標籤頁 ==================== -->
+    <div id="tab-content-numerology-match" class="app-tab-section">
+      <main class="glass-panel">
+        <h2 class="form-title">雙人生命密碼速配</h2>
+        <div class="numerology-selection-area">
+          <div class="selection-column">
+            <div class="num-match-input-box">
+              <label for="num-match-date-a" style="display: block; font-size: 0.95rem; color: var(--color-light-purple); margin-bottom: 8px;">您的出生日期 (Person A)</label>
+              <input type="date" id="num-match-date-a" min="1900-01-01">
+            </div>
+          </div>
+          <div class="selection-column">
+            <div class="num-match-input-box">
+              <label for="num-match-date-b" style="display: block; font-size: 0.95rem; color: var(--color-light-purple); margin-bottom: 8px;">對方的出生日期 (Person B)</label>
+              <input type="date" id="num-match-date-b" min="1900-01-01">
+            </div>
+          </div>
+        </div>
+        <div class="match-button-wrapper">
+          <button id="btn-num-match" class="btn-celestial">開啟靈魂契合解析</button>
+        </div>
+      </main>
+
+      <!-- 雙人密碼速配結果看板 -->
+      <section id="num-results-dashboard" class="glass-panel results-dashboard hidden animate-fade-in">
+        <div class="results-header">
+          <!-- 雙人姓名/生日與關係密碼 -->
+          <div class="num-profile-container">
+            <div class="num-profile-card">
+              <h4>你 (Person A)</h4>
+              <div class="num-profile-circle" id="num-circle-a">-</div>
+              <p class="num-profile-meta" id="num-meta-a">生日數: -</p>
+            </div>
+            <div class="match-vs-heart">💖</div>
+            <div class="num-profile-card">
+              <h4>另一半 (Person B)</h4>
+              <div class="num-profile-circle" id="num-circle-b">-</div>
+              <p class="num-profile-meta" id="num-meta-b">生日數: -</p>
+            </div>
+          </div>
+
+          <!-- 契合度得分 -->
+          <div class="score-circular-wrapper">
+            <div class="circle-score-box">
+              <span class="score-num" id="num-compatibility-score">90</span>
+              <span class="score-lbl">契合度</span>
+            </div>
+            <div class="num-relation-badge" id="num-relation-badge">關係密碼: 1</div>
+          </div>
         </div>
 
-        <!-- Tab 內容面板 -->
-        <div class="tabs-content-area">
-          <div id="tab-personality" class="tab-pane active"></div>
-          <div id="tab-career" class="tab-pane"></div>
-          <div id="tab-love" class="tab-pane"></div>
-          <div id="tab-fortune" class="tab-pane"></div>
+        <!-- 評分條 -->
+        <div class="compatibility-ratings-box">
+          <div class="rating-row">
+            <div class="rating-header">
+              <span class="rating-label">💬 溝通與靈魂共鳴</span>
+              <span class="rating-value" id="num-rate-comm-val">90%</span>
+            </div>
+            <div class="rating-bar-bg">
+              <div class="rating-bar-fill" id="num-rate-comm-bar" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <div class="rating-row">
+            <div class="rating-header">
+              <span class="rating-label">☯️ 能量吸引與互補</span>
+              <span class="rating-value" id="num-rate-passion-val">95%</span>
+            </div>
+            <div class="rating-bar-bg">
+              <div class="rating-bar-fill" id="num-rate-passion-bar" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <div class="rating-row">
+            <div class="rating-header">
+              <span class="rating-label">🛡️ 關係長期穩定度</span>
+              <span class="rating-value" id="num-rate-stable-val">85%</span>
+            </div>
+            <div class="rating-bar-bg">
+              <div class="rating-bar-fill" id="num-rate-stable-bar" style="width: 0%;"></div>
+            </div>
+          </div>
         </div>
 
-      </div>
+        <!-- 情緒評語卡 -->
+        <div class="emotional-verdict-card">
+          <h4 id="num-verdict-title">天作之合，靈魂共鳴</h4>
+          <p id="num-verdict-desc">-</p>
+          
+          <div class="verdict-friction-box" id="num-verdict-friction-box">
+            <h5>💥 潛在衝突與關係考驗：</h5>
+            <p id="num-verdict-friction-desc">-</p>
+          </div>
+        </div>
 
-      <!-- 分享與匯出按鈕 -->
-      <div class="actions-container">
-        <button id="btn-copy" class="btn-secondary">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-          </svg>
-          複製文字報告
-        </button>
-        <button id="btn-export" class="btn-secondary glow-gold">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-            <polyline points="7 10 12 15 17 10"></polyline>
-            <line x1="12" y1="15" x2="12" y2="3"></line>
-          </svg>
-          下載精美分析圖卡
-        </button>
-      </div>
+        <!-- 深度合盤模式切換 Tab -->
+        <div class="modes-tab-bar">
+          <button class="tab-link active" data-target="num-panel-relationship">💑 雙人密碼合盤</button>
+          <button class="tab-link" data-target="num-panel-comparison">☯️ 雙方天賦對比</button>
+          <button class="tab-link" data-target="num-panel-lessons">💡 相處修行指引</button>
+        </div>
 
-    </section>
+        <!-- Tab 面板內容 -->
+        <div class="tab-content-area">
+          <!-- 雙人密碼合盤 -->
+          <div id="num-panel-relationship" class="tab-panel active">
+            <div class="mode-layout">
+              <div class="mode-content">
+                <h3 id="num-relation-title">關係密碼 X：關係類型</h3>
+                <p id="num-relation-desc" class="mode-para">-</p>
+                <div class="mode-highlight-box">
+                  <h5>✨ 契合的相處基調：</h5>
+                  <p id="num-relation-harmony">-</p>
+                </div>
+              </div>
+            </div>
+          </div>
 
+          <!-- 雙方天賦對比 -->
+          <div id="num-panel-comparison" class="tab-panel">
+            <div class="side-by-side-comparison">
+              <div class="comparison-box">
+                <h5 id="num-compare-title-a">Person A (你)</h5>
+                <div class="comparison-item"><strong>生命靈數：</strong><span id="num-compare-num-a">-</span></div>
+                <div class="comparison-item"><strong>天賦強項：</strong><span id="num-compare-strength-a">-</span></div>
+                <div class="comparison-item"><strong>性格盲點：</strong><span id="num-compare-weakness-a">-</span></div>
+              </div>
+              <div class="comparison-box">
+                <h5 id="num-compare-title-b">Person B (另一半)</h5>
+                <div class="comparison-item"><strong>生命靈數：</strong><span id="num-compare-num-b">-</span></div>
+                <div class="comparison-item"><strong>天賦強項：</strong><span id="num-compare-strength-b">-</span></div>
+                <div class="comparison-item"><strong>性格盲點：</strong><span id="num-compare-weakness-b">-</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 相處修行指引 -->
+          <div id="num-panel-lessons" class="tab-panel">
+            <div class="mode-layout">
+              <div class="mode-content">
+                <h3>伴侶靈魂課題與修行</h3>
+                <p id="num-lessons-desc" class="mode-para">-</p>
+                <div class="mode-warning-box">
+                  <h5>⚠️ 注意相處地雷：</h5>
+                  <p id="num-lessons-warning">-</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ==================== 3. 雙人星座速配標籤頁 ==================== -->
+    <div id="tab-content-zodiac-match" class="app-tab-section">
+      <main class="glass-panel">
+        <div class="zodiac-selection-area">
+          <!-- 左側：第一方星座 -->
+          <div class="selection-column">
+            <h2 class="column-title">🔮 你的星座 (Person A)</h2>
+            <div class="gender-selector" id="gender-person-a">
+              <button class="gender-btn active" data-gender="male">♂️ 男</button>
+              <button class="gender-btn" data-gender="female">♀️ 女</button>
+            </div>
+            <div class="zodiac-grid" id="grid-person-a">
+              <!-- 由 JS 動態生成星座卡片 -->
+            </div>
+          </div>
+
+          <!-- 右側：第二方星座 -->
+          <div class="selection-column">
+            <h2 class="column-title">💖 另一半的星座 (Person B)</h2>
+            <div class="gender-selector" id="gender-person-b">
+              <button class="gender-btn" data-gender="male">♂️ 男</button>
+              <button class="gender-btn active" data-gender="female">♀️ 女</button>
+            </div>
+            <div class="zodiac-grid" id="grid-person-b">
+              <!-- 由 JS 動態生成星座卡片 -->
+            </div>
+          </div>
+        </div>
+
+        <!-- 分析按鈕 -->
+        <div class="match-button-wrapper">
+          <button id="btn-zodiac-match" class="btn-celestial">開啟靈魂速配分析</button>
+        </div>
+      </main>
+
+      <!-- 速配分析結果儀表板 -->
+      <section id="zodiac-results-dashboard" class="glass-panel results-dashboard hidden animate-fade-in">
+        <div class="results-header">
+          <div class="match-profile-container">
+            <div class="profile-sign" id="profile-a">
+              <span class="profile-symbol" id="symbol-a">♈</span>
+              <span class="profile-name" id="name-a">牡羊座</span>
+            </div>
+            <div class="match-vs-heart">💖</div>
+            <div class="profile-sign" id="profile-b">
+              <span class="profile-symbol" id="symbol-b">♌</span>
+              <span class="profile-name" id="name-b">獅子座</span>
+            </div>
+          </div>
+
+          <div class="score-circular-wrapper">
+            <div class="circle-score-box">
+              <span class="score-num" id="compatibility-score">92</span>
+              <span class="score-lbl">速配指數</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="compatibility-ratings-box">
+          <div class="rating-row">
+            <div class="rating-header">
+              <span class="rating-label">💬 溝通契合度</span>
+              <span class="rating-value" id="rate-comm-val">90%</span>
+            </div>
+            <div class="rating-bar-bg">
+              <div class="rating-bar-fill" id="rate-comm-bar" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <div class="rating-row">
+            <div class="rating-header">
+              <span class="rating-label">🔥 情感熱烈度</span>
+              <span class="rating-value" id="rate-passion-val">95%</span>
+            </div>
+            <div class="rating-bar-bg">
+              <div class="rating-bar-fill" id="rate-passion-bar" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <div class="rating-row">
+            <div class="rating-header">
+              <span class="rating-label">🛡️ 關係穩定度</span>
+              <span class="rating-value" id="rate-stable-val">85%</span>
+            </div>
+            <div class="rating-bar-bg">
+              <div class="rating-bar-fill" id="rate-stable-bar" style="width: 0%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="emotional-verdict-card">
+          <h4 id="verdict-title">天作之合，靈魂共鳴</h4>
+          <p id="verdict-desc">-</p>
+          <div class="verdict-friction-box" id="verdict-friction-box">
+            <h5>💥 潛在衝突與關係考驗：</h5>
+            <p id="verdict-friction-desc">-</p>
+          </div>
+        </div>
+
+        <div class="modes-tab-bar">
+          <button class="tab-link active" data-target="panel-personality">🔮 星座性格解析</button>
+          <button class="tab-link" data-target="panel-interaction">🎭 情人互動模式</button>
+          <button class="tab-link" data-target="panel-complementary">☯️ 能量互補模式</button>
+          <button class="tab-link" data-target="panel-values">💎 價值觀共鳴模式</button>
+        </div>
+
+        <div class="tab-content-area">
+          <div id="panel-personality" class="tab-panel active">
+            <div class="personality-layout">
+              <div class="personality-card" id="personality-card-a">
+                <div class="zodiac-profile-header">
+                  <span class="zodiac-profile-symbol" id="personality-symbol-a">♈</span>
+                  <div class="zodiac-profile-title">
+                    <h3 id="personality-name-a">白羊座</h3>
+                    <span class="zodiac-tag" id="personality-tag-a">-</span>
+                  </div>
+                </div>
+                <p class="zodiac-profile-label" id="personality-label-a">-</p>
+                <p class="zodiac-profile-desc" id="personality-desc-a">-</p>
+                <div class="traits-container">
+                  <div class="trait-box strength">
+                    <h5>🌟 優勢特質</h5>
+                    <div class="trait-tags" id="personality-strengths-a"></div>
+                  </div>
+                  <div class="trait-box weakness">
+                    <h5>⚠️ 劣勢盲點</h5>
+                    <div class="trait-tags" id="personality-weaknesses-a"></div>
+                  </div>
+                </div>
+                <div class="love-style-box">
+                  <h5>💖 戀愛風格與態度</h5>
+                  <p id="personality-love-a">-</p>
+                </div>
+              </div>
+
+              <div class="personality-divider">
+                <span class="divider-line"></span>
+                <span class="divider-icon">✵</span>
+                <span class="divider-line"></span>
+              </div>
+
+              <div class="personality-card" id="personality-card-b">
+                <div class="zodiac-profile-header">
+                  <span class="zodiac-profile-symbol" id="personality-symbol-b">♌</span>
+                  <div class="zodiac-profile-title">
+                    <h3 id="personality-name-b">獅子座</h3>
+                    <span class="zodiac-tag" id="personality-tag-b">-</span>
+                  </div>
+                </div>
+                <p class="zodiac-profile-label" id="personality-label-b">-</p>
+                <p class="zodiac-profile-desc" id="personality-desc-b">-</p>
+                <div class="traits-container">
+                  <div class="trait-box strength">
+                    <h5>🌟 優勢特質</h5>
+                    <div class="trait-tags" id="personality-strengths-b"></div>
+                  </div>
+                  <div class="trait-box weakness">
+                    <h5>⚠️ 劣勢盲點</h5>
+                    <div class="trait-tags" id="personality-weaknesses-b"></div>
+                  </div>
+                </div>
+                <div class="love-style-box">
+                  <h5>💖 戀愛風格與態度</h5>
+                  <p id="personality-love-b">-</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="panel-interaction" class="tab-panel">
+            <div class="mode-layout">
+              <div class="mode-content">
+                <h3>日常相處火花與溝通密碼</h3>
+                <p id="interaction-text" class="mode-para">-</p>
+                <div class="mode-highlight-box">
+                  <h5>✨ 最甜蜜的約會指南：</h5>
+                  <p id="interaction-dating">-</p>
+                </div>
+                <div class="mode-warning-box">
+                  <h5>⚠️ 相處暗礁與溝通地雷：</h5>
+                  <p id="interaction-warning">-</p>
+                </div>
+                <div class="interactive-challenge-card">
+                  <h4>🔮 今日默契升溫挑戰 (Lover Challenge)</h4>
+                  <p class="challenge-text" id="challenge-content">-</p>
+                  <button class="btn-challenge" id="btn-next-challenge">換個挑戰 ✦</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="panel-complementary" class="tab-panel">
+            <div class="mode-layout">
+              <div class="mode-content">
+                <h3>靈魂拼圖與互補成長</h3>
+                <p id="complementary-text" class="mode-para">-</p>
+                <div class="mode-highlight-box">
+                  <h5>🌱 伴侶修行課題：</h5>
+                  <p id="complementary-lesson">-</p>
+                </div>
+                <div class="mode-warning-box">
+                  <h5>🔍 性格不合關鍵剖析：</h5>
+                  <p id="complementary-warning">-</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="panel-values" class="tab-panel">
+            <div class="mode-layout">
+              <div class="mode-content">
+                <h3>未來共鳴與核心價值</h3>
+                <p id="values-text" class="mode-para">-</p>
+                <div class="mode-highlight-box">
+                  <h5>💍 長久維繫指引：</h5>
+                  <p id="values-guideline">-</p>
+                </div>
+                <div class="mode-warning-box">
+                  <h5>⚡ 價值觀分歧與對立：</h5>
+                  <p id="values-warning">-</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    
     <!-- 生命靈數科普指南 -->
     <section class="glass-panel guide-section">
       <h2>✦ 生命靈數科普指南</h2>
