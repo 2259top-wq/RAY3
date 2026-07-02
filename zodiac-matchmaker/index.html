@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>星啟心靈 • 12星座戀人速配解密 (CC0 無版權開放版)</title>
+  <meta name="description" content="自動計算12星座速配指數，結合情人互動模式、互補能量分析與價值觀共鳴，為您提供最高情緒價值的靈魂解讀與默契指南。">
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+
+  <!-- 宇宙背景與動態星空 -->
+  <div class="celestial-bg"></div>
+  <canvas id="starfield-canvas" class="star-field-canvas"></canvas>
+
+  <!-- 自動計算動畫遮罩 -->
+  <div id="loader-overlay" class="loader-overlay hidden">
+    <div class="cosmic-spinner"></div>
+    <p id="loader-text">與守護星宿建立量子連結中...</p>
+  </div>
+
+  <div class="app-container">
+    
+    <!-- 頂部導覽列 -->
+    <nav class="site-nav">
+      <div class="nav-brand">星啟心靈 • Celestial Soul</div>
+      <div class="nav-links">
+        <a href="../index.html" class="nav-link">☯️ 生命靈數</a>
+        <a href="index.html" class="nav-link active">💖 星座速配</a>
+      </div>
+    </nav>
+    
+    <!-- 網站標頭 -->
+    <header class="site-header">
+      <h1>星啟心靈 • 12星座速配解密</h1>
+      <p>解鎖星盤能量的神秘契合，開啟屬於你們的靈魂默契之旅</p>
+    </header>
+
+    <!-- 星座選擇主面板 -->
+    <main class="glass-panel">
+      <div class="zodiac-selection-area">
+        
+        <!-- 左側：第一方星座 -->
+        <div class="selection-column">
+          <h2 class="column-title">🔮 你的星座 (Person A)</h2>
+          <div class="gender-selector" id="gender-person-a">
+            <button class="gender-btn active" data-gender="male">♂️ 男</button>
+            <button class="gender-btn" data-gender="female">♀️ 女</button>
+          </div>
+          <div class="zodiac-grid" id="grid-person-a">
+            <!-- 由 JS 動態生成星座卡片 -->
+          </div>
+        </div>
+
+        <!-- 右側：第二方星座 -->
+        <div class="selection-column">
+          <h2 class="column-title">💖 另一半的星座 (Person B)</h2>
+          <div class="gender-selector" id="gender-person-b">
+            <button class="gender-btn" data-gender="male">♂️ 男</button>
+            <button class="gender-btn active" data-gender="female">♀️ 女</button>
+          </div>
+          <div class="zodiac-grid" id="grid-person-b">
+            <!-- 由 JS 動態生成星座卡片 -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 分析按鈕 -->
+      <div class="match-button-wrapper">
+        <button id="btn-match" class="btn-celestial">開啟靈魂速配分析</button>
+      </div>
+    </main>
+
+    <!-- 速配分析結果儀表板 (預設隱藏) -->
+    <section id="results-dashboard" class="glass-panel results-dashboard hidden">
+      
+      <!-- 頂部速配基礎資訊 -->
+      <div class="results-header">
+        
+        <div class="match-profile-container">
+          <!-- Person A -->
+          <div class="profile-sign" id="profile-a">
+            <span class="profile-symbol" id="symbol-a">♈</span>
+            <span class="profile-name" id="name-a">牡羊座</span>
+          </div>
+          
+          <div class="match-vs-heart">💖</div>
+          
+          <!-- Person B -->
+          <div class="profile-sign" id="profile-b">
+            <span class="profile-symbol" id="symbol-b">♌</span>
+            <span class="profile-name" id="name-b">獅子座</span>
+          </div>
+        </div>
+
+        <!-- 圓形百分比得分 -->
+        <div class="score-circular-wrapper">
+          <div class="circle-score-box">
+            <span class="score-num" id="compatibility-score">92</span>
+            <span class="score-lbl">速配指數</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 細項屬性速配條 -->
+      <div class="compatibility-ratings-box">
+        <div class="rating-row">
+          <div class="rating-header">
+            <span class="rating-label">💬 溝通契合度</span>
+            <span class="rating-value" id="rate-comm-val">90%</span>
+          </div>
+          <div class="rating-bar-bg">
+            <div class="rating-bar-fill" id="rate-comm-bar" style="width: 0%;"></div>
+          </div>
+        </div>
+
+        <div class="rating-row">
+          <div class="rating-header">
+            <span class="rating-label">🔥 情感熱烈度</span>
+            <span class="rating-value" id="rate-passion-val">95%</span>
+          </div>
+          <div class="rating-bar-bg">
+            <div class="rating-bar-fill" id="rate-passion-bar" style="width: 0%;"></div>
+          </div>
+        </div>
+
+        <div class="rating-row">
+          <div class="rating-header">
+            <span class="rating-label">🛡️ 關係穩定度</span>
+            <span class="rating-value" id="rate-stable-val">85%</span>
+          </div>
+          <div class="rating-bar-bg">
+            <div class="rating-bar-fill" id="rate-stable-bar" style="width: 0%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 情緒價值總評語卡 -->
+      <div class="emotional-verdict-card">
+        <h4 id="verdict-title">天作之合，靈魂共鳴</h4>
+        <p id="verdict-desc">兩個人在一起就像是兩顆互相吸引的恆星，在浩瀚的宇宙中交織出明亮的光芒。你們的愛充滿激情且彼此忠誠，是不畏風雨的黃金組合。</p>
+        
+        <!-- 衝突摩擦區 -->
+        <div class="verdict-friction-box" id="verdict-friction-box">
+          <h5>💥 潛在衝突與關係考驗：</h5>
+          <p id="verdict-friction-desc">相處久了可能會面臨的性格磨擦點與考驗...</p>
+        </div>
+      </div>
+
+      <!-- 四大深度模式切換 Tab -->
+      <div class="modes-tab-bar">
+        <button class="tab-link active" data-target="panel-personality">🔮 星座性格解析</button>
+        <button class="tab-link" data-target="panel-interaction">🎭 情人互動模式</button>
+        <button class="tab-link" data-target="panel-complementary">☯️ 能量互補模式</button>
+        <button class="tab-link" data-target="panel-values">💎 價值觀共鳴模式</button>
+      </div>
+
+      <!-- Tab 面板內容 -->
+      <div class="tab-content-area">
+
+        <!-- 星座性格解析 -->
+        <div id="panel-personality" class="tab-panel active">
+          <div class="personality-layout">
+            <!-- Person A 性格卡片 -->
+            <div class="personality-card" id="personality-card-a">
+              <div class="zodiac-profile-header">
+                <span class="zodiac-profile-symbol" id="personality-symbol-a">♈</span>
+                <div class="zodiac-profile-title">
+                  <h3 id="personality-name-a">白羊座</h3>
+                  <span class="zodiac-tag" id="personality-tag-a">火象星座 • 本位</span>
+                </div>
+              </div>
+              <p class="zodiac-profile-label" id="personality-label-a">熱烈奔放的開拓者</p>
+              <p class="zodiac-profile-desc" id="personality-desc-a">擁有無窮勇氣與行動力的開路先鋒</p>
+              
+              <div class="traits-container">
+                <div class="trait-box strength">
+                  <h5>🌟 優勢特質</h5>
+                  <div class="trait-tags" id="personality-strengths-a">
+                    <!-- Dynamic tags -->
+                  </div>
+                </div>
+                <div class="trait-box weakness">
+                  <h5>⚠️ 劣勢盲點</h5>
+                  <div class="trait-tags" id="personality-weaknesses-a">
+                    <!-- Dynamic tags -->
+                  </div>
+                </div>
+              </div>
+
+              <div class="love-style-box">
+                <h5>💖 戀愛風格與態度</h5>
+                <p id="personality-love-a">主動出擊，愛恨分明</p>
+              </div>
+            </div>
+
+            <!-- VS 分割線 -->
+            <div class="personality-divider">
+              <span class="divider-line"></span>
+              <span class="divider-icon">✵</span>
+              <span class="divider-line"></span>
+            </div>
+
+            <!-- Person B 性格卡片 -->
+            <div class="personality-card" id="personality-card-b">
+              <div class="zodiac-profile-header">
+                <span class="zodiac-profile-symbol" id="personality-symbol-b">♌</span>
+                <div class="zodiac-profile-title">
+                  <h3 id="personality-name-b">獅子座</h3>
+                  <span class="zodiac-tag" id="personality-tag-b">火象星座 • 固定</span>
+                </div>
+              </div>
+              <p class="zodiac-profile-label" id="personality-label-b">慷慨高傲的領導者</p>
+              <p class="zodiac-profile-desc" id="personality-desc-b">自帶引力與領袖氣場的耀眼恆星</p>
+              
+              <div class="traits-container">
+                <div class="trait-box strength">
+                  <h5>🌟 優勢特質</h5>
+                  <div class="trait-tags" id="personality-strengths-b">
+                    <!-- Dynamic tags -->
+                  </div>
+                </div>
+                <div class="trait-box weakness">
+                  <h5>⚠️ 劣勢盲點</h5>
+                  <div class="trait-tags" id="personality-weaknesses-b">
+                    <!-- Dynamic tags -->
+                  </div>
+                </div>
+              </div>
+
+              <div class="love-style-box">
+                <h5>💖 戀愛風格與態度</h5>
+                <p id="personality-love-b">充滿戲劇張力與絕對忠誠的愛</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 情人互動模式 -->
+        <div id="panel-interaction" class="tab-panel">
+          <div class="mode-layout">
+            <div class="mode-content">
+              <h3>日常相處火花與溝通密碼</h3>
+              <p id="interaction-text" class="mode-para">你們的互動總是自然且充滿生機。不論是分享生活中的瑣碎，還是進行深度的思考討論，彼此都能快速抓到對方的笑點與思維頻率。</p>
+              
+              <div class="mode-highlight-box">
+                <h5>✨ 最甜蜜的約會指南：</h5>
+                <p id="interaction-dating">一起進行戶外運動、挑戰新鮮事物，或者一起策劃一場隨興的公路旅行，最能激發你們的熱情火花！</p>
+              </div>
+
+              <div class="mode-warning-box">
+                <h5>⚠️ 相處暗礁與溝通地雷：</h5>
+                <p id="interaction-warning">雙方在日常對話中容易踩到的地雷與誤區...</p>
+              </div>
+
+              <!-- 情人互動小挑戰 -->
+              <div class="interactive-challenge-card">
+                <h4>🔮 今日默契升溫挑戰 (Lover Challenge)</h4>
+                <p class="challenge-text" id="challenge-content">「用眼神交流30秒，並不准笑場，最後給對方一個溫暖的擁抱。」</p>
+                <button class="btn-challenge" id="btn-next-challenge">換個挑戰 ✦</button>
+              </div>
+            </div>
+            
+            <div class="mode-illustration-container">
+              <img src="assets/lover_interaction.png" alt="情人互動模式" class="mode-img">
+            </div>
+          </div>
+        </div>
+
+        <!-- 能量互補模式 -->
+        <div id="panel-complementary" class="tab-panel">
+          <div class="mode-layout">
+            <div class="mode-content">
+              <h3>靈魂拼圖與互補成長</h3>
+              <p id="complementary-text" class="mode-para">你們的結合正是陰陽調和的典範。一個人擅長開創與引導，另一個人則溫柔地托底與包容。性格上的不同不是隔閡，而是讓靈魂趨於完美的最後一塊拼圖。</p>
+              
+              <div class="mode-highlight-box">
+                <h5>🌱 伴侶修行課題：</h5>
+                <p id="complementary-lesson">學習在強勢時給予對方溫柔的包容，在被動時勇敢踏出支持的一步，這能讓你們的守護能量牢不可破。</p>
+              </div>
+
+              <div class="mode-warning-box">
+                <h5>🔍 性格不合關鍵剖析：</h5>
+                <p id="complementary-warning">性格差異中可能帶來摩擦與不協調的關鍵要素...</p>
+              </div>
+            </div>
+
+            <div class="mode-illustration-container">
+              <img src="assets/complementary_balance.png" alt="互補能量模式" class="mode-img">
+            </div>
+          </div>
+        </div>
+
+        <!-- 價值觀共鳴模式 -->
+        <div id="panel-values" class="tab-panel">
+          <div class="mode-layout">
+            <div class="mode-content">
+              <h3>未來共鳴與核心價值</h3>
+              <p id="values-text" class="mode-para">在人生的大方向上，你們擁有高度一致的追求。不論是對於理想生活的勾勒，對財富積累的態度，還是對家庭責任的承擔，彼此都願意成為對方的依靠。</p>
+              
+              <div class="mode-highlight-box">
+                <h5>💍 長久維繫指引：</h5>
+                <p id="values-guideline">建立一個共同的夢想儲蓄計劃或未來清單，定期回顧進度，讓未來的每一步都刻印著彼此的名字。</p>
+              </div>
+
+              <div class="mode-warning-box">
+                <h5>⚡ 價值觀分歧與對立：</h5>
+                <p id="values-warning">雙方在生活目標、金錢觀或未來願景中的潛在分歧...</p>
+              </div>
+            </div>
+
+            <div class="mode-illustration-container">
+              <img src="assets/values_harmony.png" alt="價值觀模式" class="mode-img">
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- 星座運勢科普與查詢指南 -->
+    <section class="glass-panel guide-section">
+      <h2>✦ 星座當日運勢解密指南</h2>
+      <div class="faq-grid">
+        
+        <div class="faq-item">
+          <h4>💡 星座運勢小百科：它是如何運作的？</h4>
+          <p>
+            星象運勢就像是我們人生的「氣象預報」。<br><br>
+            <strong>出生星盤 (Natal Chart)：</strong>如同您專屬的氣候地圖，記錄了您誕生那一刻，宇宙星體（太陽、月亮、水星等）在黃道上的精確位置。<br><br>
+            <strong>當日星象 (Transits)：</strong>即是每天在天空中流轉的天氣變化。當前宇宙星象正運行於<strong>巨蟹座季節</strong>，整體宇宙磁場更著重於內在情感沉澱與家庭關係。<br><br>
+            <strong>星體相位 (Aspects)：</strong>當天運勢的好壞與啟示，完全取決於天上的流年星體（如代表幸運與擴張的木星、代表考驗與責任的土星）走到您的出生星盤哪一個敏感位置，並與您的本命星體形成何種角度（相位）。<strong>和諧相位</strong>（如三合、六合）帶來順利與好運，而<strong>衝突相位</strong>（如四分、對分）則代表需要耐心面對的功課與成長考驗。這也是為什麼僅看單一太陽星座是不夠的，以個人精確出生時間繪製星盤比對角度，才是最準確解讀當日運勢的方法。
+          </p>
+          <img src="../cosmic_hourglass.png" alt="宇宙星體與命運星盤" class="faq-image">
+        </div>
+
+        <div class="faq-item">
+          <h4>🌟 全球權威運勢查詢步驟</h4>
+          <p>
+            若想取得最具權威性、個人專屬的當日星盤運勢分析，可以依循以下步驟前往全球最具公信力的瑞士占星網站 <strong>Astrodienst (astro.com)</strong> 進行查詢：
+          </p>
+          <ol style="color: rgba(255, 255, 255, 0.7); font-size: 0.88rem; line-height: 1.8; padding-left: 20px; margin-top: 10px;">
+            <li><strong>連線至權威原廠網站：</strong>前往瑞士占星資訊網站 Astrodienst。</li>
+            <li><strong>建立個人免費檔案：</strong>在選單中點選「建立星歷/出生圖」，輸入您的出生年月日、精準出生時間（至分鐘）以及出生城市地點。</li>
+            <li><strong>查看個人專屬每日運勢：</strong>檔案建立後，點選「個人每日占星」或「高級每日星座運勢」。</li>
+            <li><strong>閱讀客製化分析報告：</strong>系統會依據當下天空中運行的流年星體（如月亮過境等）與您出生圖中星體的相位互動，產生最精準、完全專屬於您個人的當日運勢報告。</li>
+          </ol>
+          <p style="margin-top: 15px; font-size: 0.85rem; color: var(--color-light-purple);">
+            ※ 請注意，本指南僅為引導及原理科普，請前往 Astrodienst 官方網站進行個人隱私星盤的安全查詢。
+          </p>
+          <img src="../magic_grid.png" alt="星圖與量子星座相位分析" class="faq-image">
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 網站頁尾 -->
+    <footer class="site-footer">
+      <p>© 星啟心靈 • 遵循 CC0 協議開放公有領域</p>
+      <p>本專案演算法、設計美學、解說文案及圖片資產完全宣告為 CC0 授權，任何人皆可自由進行商業與非商業二次修改與複製。</p>
+      
+      <div class="cc0-badge">
+        <span class="cc0-icon">0</span>
+        <span>PUBLIC DOMAIN (CC0)</span>
+      </div>
+    </footer>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
