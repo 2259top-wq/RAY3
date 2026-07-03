@@ -2080,4 +2080,14 @@ input[type="date"]:focus {
   font-weight: bold;
 }
 
+/* Tab 顯示面板 */
+.tab-panel {
+  display: none;
+  animation: fadeIn 0.5s ease forwards;
+}
+
+.tab-panel.active {
+  display: block;
+}
+
 
