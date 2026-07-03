@@ -504,37 +504,38 @@ body {
 }
 
 .tab-link {
-  background: none;
-  border: none;
-  padding: 15px 25px;
-  color: rgba(255, 255, 255, 0.55);
-  font-size: 1.05rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(223, 183, 108, 0.15);
+  border-radius: 20px;
+  padding: 10px 22px;
+  margin-right: 12px;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.95rem;
   font-family: var(--font-serif);
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
-  position: relative;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   white-space: nowrap;
   letter-spacing: 1px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .tab-link:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(223, 183, 108, 0.35);
   color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(223, 183, 108, 0.1);
 }
 
 .tab-link.active {
-  color: var(--color-aurora-blue);
-}
-
-.tab-link.active::after {
-  content: "";
-  position: absolute;
-  bottom: -1px;
-  left: 0;
-  width: 100%;
-  height: 3px;
-  background: var(--color-aurora-blue);
-  box-shadow: var(--cyan-glow);
+  background: linear-gradient(135deg, rgba(138, 43, 226, 0.35) 0%, rgba(0, 255, 255, 0.2) 100%);
+  border-color: var(--color-aurora-blue);
+  color: #ffffff;
+  box-shadow: var(--cyan-glow), inset 0 0 8px rgba(0, 255, 255, 0.2);
+  transform: translateY(0);
 }
 
 /* Tab 顯示面板 */
