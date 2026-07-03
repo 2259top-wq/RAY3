@@ -189,6 +189,51 @@ const loverChallenges = [
   "共同寫下一件今年內你們想一起去挑戰的「小旅行」，寫完貼在顯眼的地方。"
 ];
 
+// 5.2.2 獲取星座速配專業依據解析
+function getZodiacScoreExplanation(a, b, res) {
+  const score = res.score;
+  let explanation = "";
+  
+  explanation += `此配對是基於黃道十二宮（Zodiac Synastry）之星盤太陽相位角度與元素煉金術（Element Alchemy）所做的專業解析。`;
+  explanation += `雙方分別為 <strong class="highlight-gold">${a.name}（${getElementName(a.element)}象）</strong> 與 <strong class="highlight-gold">${b.name}（${getElementName(b.element)}象）</strong>。`;
+  
+  if (score >= 90) {
+    explanation += `雙方契合度高達 <strong class="highlight-gold">${score}%</strong>。在占星相位學中，你們的太陽多形成和諧的 <strong>120° (拱相位/三合)</strong> 或 <strong>0° (合相位)</strong>。這意味著雙方守護星能量自然流動，沒有阻礙，是宇宙中極具天作之合美譽的同頻共鳴關係，靈魂契合度極高。`;
+  } else if (score >= 80) {
+    explanation += `雙方契合度為 <strong class="highlight-gold">${score}%</strong>。你們多處於 <strong>60° (六合相位)</strong> 區間，象徵著「支持與機會」。你們的性格能互相欣賞、包容，在人生的道路上能互為貴人，是一對能夠良性溝通、和諧相伴的優秀伴侶。`;
+  } else if (score >= 70) {
+    explanation += `雙方契合度為 <strong class="highlight-gold">${score}%</strong>。雙方星盤能量大致平衡。雖然在某些生活細節上有著不同的處事邏輯，但這也為彼此生活增添了趣味，屬於許多伴侶只要用心經營便能穩定前行的互補組合。`;
+  } else {
+    explanation += `雙方契合度為 <strong class="highlight-gold">${score}%</strong>。在古典占星學中，此配置往往形成 <strong>90° (刑相位/四分)</strong> 或 <strong>180° (對分相/對沖)</strong> 的動態張力。請注意，<strong>刑沖相位在占星學中代表最強烈的吸引力與激情的火花</strong>，許多白頭偕老的伴侶都有此相位。這代表你們的靈魂不甘於平庸的陪伴，而是主動選擇了「強烈碰撞、煉製純金」的成長契約。每一次的摩擦，都是照亮彼此盲區的探照燈。`;
+  }
+  
+  explanation += `<br><br>`;
+  explanation += `📊 <strong>指標深度剖析：</strong><br>`;
+  
+  // 溝通契合度
+  if (a.element === "air" || b.element === "air" || a.element === b.element) {
+    explanation += `• 💬 <strong>溝通契合度 (${res.commRate}%)</strong>：受<strong>風象流動性（水星能量）</strong>或同象和諧影響，你們的對話頻率流暢，能自然理解對方的觀點與情感暗示，少有雞同鴨講的挫折感。<br>`;
+  } else {
+    explanation += `• 💬 <strong>溝通契合度 (${res.commRate}%)</strong>：你們的思維基調一個理性抽離，一個感性細膩。溝通時需要多給對方一些時間進行語意翻譯，避免急躁定性。<br>`;
+  }
+  
+  // 情感熱烈度
+  if (res.passionRate >= 80) {
+    explanation += `• 🔥 <strong>情感熱烈度 (${res.passionRate}%)</strong>：受金星與火星（Venus-Mars Alchemy）的能量交織影響，你們之間存在極強的電磁引力，熱戀期火花四射，是化學反應極為強烈的性感應組合。<br>`;
+  } else {
+    explanation += `• 🔥 <strong>情感熱烈度 (${res.passionRate}%)</strong>：你們的愛更偏向於日常相伴、細水長流。雖然沒有狂熱的乾柴烈火，但溫潤的陪伴反而能讓情感更加安全與溫馨。<br>`;
+  }
+  
+  // 關係穩定度
+  if (a.element === "earth" || b.element === "earth" || a.modality === "fixed" && b.modality === "fixed") {
+    explanation += `• 🛡️ <strong>關係穩定度 (${res.stableRate}%)</strong>：受<strong>土象重力（土星能量）</strong>或固定宮的堅持影響，你們的關係底蘊穩固，一旦確立承諾就不易動搖，是能一起經歷生活現實考驗的基石組合。`;
+  } else {
+    explanation += `• 🛡️ <strong>關係穩定度 (${res.stableRate}%)</strong>：你們的宮位配置偏向變動與開創，生活充滿變化。長期相處需要刻意去構築儀式感與共同目標，以提供必要的安全地基。`;
+  }
+  
+  return explanation;
+}
+
 // 5. 計算匹配邏輯與雙軌文案生成引擎
 function calculateMatch(signKeyA, signKeyB, genderA, genderB) {
   const a = zodiacData[signKeyA];
@@ -580,6 +625,15 @@ document.addEventListener("DOMContentLoaded", () => {
 function showResults(keyA, keyB, genderA, genderB, res) {
   const a = zodiacData[keyA];
   const b = zodiacData[keyB];
+
+  // 顯示專業依據卡片
+  const explanationText = getZodiacScoreExplanation(a, b, res);
+  const explanationCard = document.getElementById("zodiac-score-explanation-card");
+  const explanationPara = document.getElementById("zodiac-score-explanation-text");
+  if (explanationCard && explanationPara) {
+    explanationPara.innerHTML = explanationText;
+    explanationCard.classList.remove("hidden");
+  }
 
   // 頂部頭資訊更新，標註性別
   document.getElementById("symbol-a").innerText = a.symbol;
